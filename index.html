@@ -13,70 +13,50 @@
             font-family: "PingFang TC", "Microsoft JhengHei", sans-serif; 
             background: var(--bg); margin: 0; padding: 20px; 
             color: var(--text); display: flex; flex-direction: column; align-items: center; 
+            overflow-x: hidden;
         }
         
-        /* 🔥 直式注音在右側的魔法排版 🔥 */
-        h1 { margin-bottom: 10px; color: #E65100; text-align: center; }
+        h1 { margin-bottom: 5px; color: #E65100; text-align: center; }
         .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; }
         .z-char { font-size: 1em; font-weight: 900; }
-        .z-bpmf { 
-            writing-mode: vertical-rl; /* 讓注音變直的 */
-            font-size: 0.45em;         /* 注音的大小 */
-            color: #555; 
-            margin-left: 4px;          /* 和國字的距離 */
-            line-height: 1; 
-            font-weight: normal;
+        .z-bpmf-box {
+            position: relative; display: inline-flex; flex-direction: column; justify-content: center;
+            margin-left: 3px; margin-right: 0.6em; font-size: 0.45em; color: #555; font-weight: normal; line-height: 1.1;
         }
+        .z-bpmf-symbols { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -1px; }
+        .z-tone { position: absolute; right: -0.9em; font-size: 1em; font-weight: bold; }
+        .z-tone-light { position: absolute; top: -1em; left: 50%; transform: translateX(-50%); font-size: 1em; font-weight: bold; }
 
-        .setup-panel { 
-            background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; 
-            display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); 
-            width: 100%; max-width: 900px; font-size: 16px; justify-content: center; flex-wrap: wrap; 
-        }
-        .main-card { 
-            background: var(--card); padding: 30px; border-radius: 20px; 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 900px; box-sizing: border-box; 
-        }
+        .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
+        .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
         
-        .timer-zone { 
-            background: #FFF3E0; border: 3px solid var(--primary); padding: 10px 25px; 
-            border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; 
-            margin-bottom: 25px; font-weight: bold; font-size: 20px;
-        }
+        .timer-zone { background: #FFF3E0; border: 3px solid var(--primary); padding: 10px 25px; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; font-size: 20px; }
+        .announce-board { width: 100%; max-width: 800px; text-align: center; font-size: 24px; font-weight: bold; color: #E65100; border: 3px dashed #FFCA28; background: #FFF9C4; padding: 12px; border-radius: 12px; margin-bottom: 25px; box-sizing: border-box; }
+        
         .is-locked { opacity: 0.4; pointer-events: none; filter: grayscale(1); } 
-        
         .tabs { display: flex; gap: 15px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; align-items: center; justify-content: center; }
-        .tab-btn { 
-            padding: 12px 25px; border: 3px solid var(--border); border-radius: 50px; 
-            background: white; cursor: pointer; color: var(--primary); 
-            font-size: 26px; white-space: nowrap; transition: 0.2s;
-            display: flex; align-items: center; gap: 8px;
-        }
+        .tab-btn { padding: 12px 25px; border: 3px solid var(--border); border-radius: 50px; background: white; cursor: pointer; color: var(--primary); font-size: 26px; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
         .tab-btn.active { background: var(--primary); color: white; border-color: var(--primary); transform: scale(1.05); }
         
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); gap: 15px; transition: 0.5s; }
-        .student-btn { 
-            aspect-ratio: 1/1; border: 4px solid #E0E0E0; background: white; border-radius: 50%; 
-            cursor: pointer; font-size: 36px; font-weight: 900; color: #9E9E9E; 
-            position: relative; display: flex; align-items: center; justify-content: center; 
-            box-shadow: 0 6px 0 #E0E0E0; transition: all 0.1s;
-        }
+        .student-btn { aspect-ratio: 1/1; border: 4px solid #E0E0E0; background: white; border-radius: 50%; cursor: pointer; font-size: 36px; font-weight: 900; color: #9E9E9E; position: relative; display: flex; align-items: center; justify-content: center; box-shadow: 0 6px 0 #E0E0E0; transition: all 0.1s; }
         .student-btn:active { box-shadow: 0 0px 0 #E0E0E0; transform: translateY(6px); }
         .student-btn.completed { background: var(--success); color: white; border-color: #388E3C; box-shadow: 0 6px 0 #2E7D32; }
         .student-btn.completed:active { box-shadow: 0 0px 0 #2E7D32; transform: translateY(6px); }
-        
+        .student-btn.vacant { background: #f5f5f5; border: 3px dashed #dcdcdc; color: #dcdcdc; box-shadow: none; cursor: not-allowed; }
+        .student-btn.vacant:active { transform: none; }
+
         .info-bar { margin-top: 35px; display: flex; justify-content: space-between; align-items: center; background: #F1F8E9; padding: 15px 25px; border-radius: 12px; border: 2px solid #C5E1A5; font-size: 20px; font-weight: bold;}
         input { padding: 8px; border-radius: 8px; border: 2px solid var(--border); font-size: 16px; }
         .btn-action { background: var(--primary); color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold;}
+        .btn-export { background: #0288D1; color: white; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight: bold; margin-left: 10px;}
         .btn-delete { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 8px; cursor: pointer; font-size: 14px; margin-left: 10px; transition: 0.2s; }
         
-        #toast {
-            visibility: hidden; min-width: 250px; background-color: var(--success); color: #fff; text-align: center; border-radius: 50px; padding: 15px 30px;
-            position: fixed; z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%);
-            font-size: 28px; font-weight: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.4s, bottom 0.4s;
-        }
+        #toast { visibility: hidden; min-width: 350px; background-color: var(--success); color: #fff; text-align: center; border-radius: 50px; padding: 20px 40px; position: fixed; z-index: 1000; bottom: 30px; left: 50%; transform: translateX(-50%); font-size: 32px; font-weight: 900; box-shadow: 0 6px 20px rgba(0,0,0,0.2); opacity: 0; transition: opacity 0.4s, bottom 0.4s; }
         #toast.show { visibility: visible; opacity: 1; bottom: 50px; }
-        #toast.celebrate { background-color: #FF5722; font-size: 36px; padding: 25px 50px; border: 5px solid #fff; }
+        #toast.celebrate { background-color: #FF5722; font-size: 40px; padding: 30px 60px; border: 6px solid #fff; }
+        .confetti { position: fixed; top: -50px; z-index: 9999; font-size: 45px; animation: fall linear forwards; pointer-events: none; }
+        @keyframes fall { to { transform: translateY(110vh) rotate(720deg); } }
     </style>
 </head>
 <body>
@@ -87,26 +67,33 @@
 
 <div class="setup-panel">
     <span>全班人數：<input type="number" id="numInput" value="32" style="width: 50px;"></span>
-    <span style="margin-left: 10px;">圖案：<input type="text" id="emojiInput" value="🦷" placeholder="貼上圖案" style="width: 40px; text-align: center; font-size: 20px;"></span>
-    <span style="margin-left: 5px;">名稱(含注音)：<input type="text" id="tabInput" placeholder="例：潔(ㄐㄧㄝˊ)牙(ㄧㄚˊ)" style="width: 180px;"></span>
-    <button class="btn-action" onclick="addNewCategory()">新增</button>
+    <span style="margin-left: 5px;">請假 / 空號：<input type="text" id="vacantInput" value="14,15,16,17,18,19,20" placeholder="用逗號分開" style="width: 140px;" onchange="updateVacant()"></span>
+    
     <div style="border-left: 2px dashed #ccc; height: 30px; margin: 0 10px;"></div>
-    <span>「<span id="settingTabName" style="font-weight:bold; color:var(--primary);">當前</span>」截止：
+    <span>圖案：<input type="text" id="emojiInput" value="🦷" style="width: 35px; text-align: center; font-size: 20px;"></span>
+    <span>名稱(加注音)：<input type="text" id="tabInput" placeholder="例：潔(ㄐㄧㄝˊ)牙(ㄧㄚˊ)" style="width: 160px;"></span>
+    <button class="btn-action" onclick="addNewCategory()">新增板塊</button>
+    
+    <div style="border-left: 2px dashed #ccc; height: 30px; margin: 0 10px;"></div>
+    <span>截止時間：
         <input type="time" id="deadlineInput" onchange="updateTabDeadline()">
         <label style="cursor: pointer; font-weight: bold; margin-left: 5px;">
             <input type="checkbox" id="noLimitCheck" onchange="toggleNoLimit()"> 不限時
         </label>
-        <button class="btn-delete" onclick="deleteCurrentCategory()">刪除任務</button>
+        <button class="btn-delete" onclick="deleteCurrentCategory()">刪除板塊</button>
     </span>
 </div>
 
 <div class="main-card">
-    <div style="text-align: center;">
+    <div style="text-align: center; display: flex; flex-direction: column; align-items: center;">
         <div class="timer-zone">
+            📅 <span id="currentDate" style="margin-right: 15px; color: #E65100;"></span>
             ⏰ <span id="currentTime">00:00:00</span>
             <span id="statusLabel" style="margin-left: 10px; padding: 4px 12px; border-radius: 12px; font-size: 16px;"></span>
             <span id="deadlineText" style="font-size: 16px; color: var(--danger);"></span>
         </div>
+        <!-- 發光公告板 -->
+        <input type="text" id="announceInput" class="announce-board" placeholder="📢 點這裡打字公告（例：值日生：3, 4 / 抬餐桶：第三組）" onchange="saveAnnounce()">
     </div>
 
     <div class="tabs" id="tabs"></div>
@@ -114,55 +101,88 @@
 
     <div class="info-bar">
         <span>已過關：<strong id="statCount" style="color: var(--success); font-size: 36px;">0</strong> / <span id="statTotal">32</span></span>
-        <button onclick="clearCurrent()" style="color: var(--danger); background: none; border: 2px solid var(--danger); padding: 5px 15px; border-radius: 50px; cursor: pointer; font-size: 16px; font-weight:bold;">重新開始 (清空)</button>
+        <div>
+            <button class="btn-export" onclick="exportLog()">💾 下載今日紀錄</button>
+            <button onclick="clearCurrent()" style="color: var(--danger); background: none; border: 2px solid var(--danger); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 16px; font-weight:bold; margin-left: 10px;">重新開始 (清空)</button>
+        </div>
     </div>
 </div>
 
-<div id="toast">好棒！</div>
+<div id="toast">這裡會顯示鼓勵！</div>
 
 <script>
-    // 🔥 處理直式注音的魔法函數 (支援半形與全形括號)
     function parseZhuyin(text) {
         const regex = /(.)[\(（](.*?)[\)）]/g;
         if (!regex.test(text)) return text;
-        return text.replace(regex, '<span class="z-word"><span class="z-char">$1</span><span class="z-bpmf">$2</span></span>');
+        return text.replace(regex, (match, char, bpmf) => {
+            let tone = ''; let lightTone = ''; let base = bpmf.trim();
+            if (base.includes('˙')) { lightTone = '˙'; base = base.replace('˙', ''); } 
+            else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
+            let tonePos = base.length === 3 ? 'top: 65%;' : 'top: 50%;';
+            return `<span class="z-word"><span class="z-char">${char}</span><span class="z-bpmf-box">${lightTone ? `<span class="z-tone-light">˙</span>` : ''}<span class="z-bpmf-symbols">${base}</span>${tone ? `<span class="z-tone" style="${tonePos} transform: translateY(-50%);">${tone}</span>` : ''}</span></span>`;
+        });
     }
 
-    // 設定主標題
-    document.getElementById('mainTitle').innerHTML = parseZhuyin('闖(ㄔㄨㄤˇ)關(ㄍㄨㄢ)大(ㄉㄚˋ)挑(ㄊㄧㄠ)戰(ㄓㄢˋ)');
+    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠ)戰(ㄓㄢˋ)');
+    
+    const individualMsgs = [
+        parseZhuyin("你(ㄋㄧˇ)很(ㄏㄣˇ)努(ㄋㄨˇ)力(ㄌㄧˋ)喔(ㄛ)！"), 
+        parseZhuyin("越(ㄩㄝˋ)來(ㄌㄞˊ)越(ㄩㄝˋ)進(ㄐㄧㄣˋ)步(ㄅㄨˋ)了(˙ㄌㄜ)！"), 
+        parseZhuyin("今(ㄐㄧㄣ)天(ㄊㄧㄢ)也(ㄧㄝˇ)做(ㄗㄨㄛˋ)到(ㄉㄠˋ)了(˙ㄌㄜ)！"), 
+        parseZhuyin("繼(ㄐㄧˋ)續(ㄒㄩˋ)保(ㄅㄠˇ)持(ㄔˊ)！"),
+        parseZhuyin("每(ㄇㄟˇ)天(ㄊㄧㄢ)都(ㄉㄡ)在(ㄗㄞˋ)成(ㄔㄥˊ)長(ㄓㄤˇ)！")
+    ];
+    const classMsgs = [
+        parseZhuyin("全(ㄑㄩㄢˊ)班(ㄅㄢ)都(ㄉㄡ)完(ㄨㄢˊ)成(ㄔㄥˊ)了(˙ㄌㄜ)！"), 
+        parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
+    ];
 
-    const individualMsgs = ["好棒！", "過關！", "太厲害了！", "動作好快！", "讚讚讚！"];
-    const classMsgs = ["全班都過關了！超級棒！", "大家太神啦！", "完美！給全班拍拍手！"];
-
-    // 換成 v11 以載入全新的注音預設格式
-    let config = JSON.parse(localStorage.getItem('classConfig_v11')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v14')) || {
         studentCount: 32,
+        vacant: "14,15,16,17,18,19,20",
+        announcement: "",
         categories: [
             { name: '潔(ㄐㄧㄝˊ)牙(ㄧㄚˊ)', icon: '🦷', deadline: '12:35' },
-            { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' },
-            { name: '抄(ㄔㄠ)聯(ㄌㄧㄢˊ)絡(ㄌㄨㄛˋ)簿(ㄅㄨˋ)', icon: '📖', deadline: '15:30' }
+            { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v11')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v14')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
         const toast = document.getElementById("toast");
-        toast.innerText = msg;
-        if (isCelebrate) toast.classList.add("celebrate");
-        else toast.classList.remove("celebrate");
-        
+        toast.innerHTML = msg; 
+        if (isCelebrate) { toast.classList.add("celebrate"); fireConfetti(); } 
+        else { toast.classList.remove("celebrate"); }
         toast.classList.add("show");
-        setTimeout(() => { toast.classList.remove("show"); }, 2500); 
+        setTimeout(() => { toast.classList.remove("show"); }, 4500); 
+    }
+
+    function fireConfetti() {
+        const emojis = ['🎆', '🎊', '🎉', '✨', '🌟'];
+        for(let i = 0; i < 45; i++) {
+            let conf = document.createElement('div');
+            conf.className = 'confetti';
+            conf.innerText = emojis[Math.floor(Math.random() * emojis.length)];
+            conf.style.left = Math.random() * 100 + 'vw';
+            conf.style.animationDuration = (Math.random() * 2 + 2) + 's';
+            document.body.appendChild(conf);
+            setTimeout(() => conf.remove(), 5000);
+        }
     }
 
     function init() {
         document.getElementById('numInput').value = config.studentCount;
+        document.getElementById('vacantInput').value = config.vacant;
+        document.getElementById('announceInput').value = config.announcement;
+        
         document.getElementById('numInput').onchange = (e) => { config.studentCount = e.target.value; saveAll(); renderGrid(); };
-        renderTabs();
-        renderGrid();
-        setInterval(refreshUI, 1000);
+        renderTabs(); renderGrid(); setInterval(refreshUI, 1000);
     }
+
+    function updateVacant() { config.vacant = document.getElementById('vacantInput').value; saveAll(); renderGrid(); }
+    function saveAnnounce() { config.announcement = document.getElementById('announceInput').value; saveAll(); }
+    function getVacantList() { return config.vacant.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)); }
 
     function renderTabs() {
         const container = document.getElementById('tabs');
@@ -170,15 +190,12 @@
         config.categories.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = `tab-btn ${cat.name === currentTabName ? 'active' : ''}`;
-            // 讓按鈕顯示 Emoji + 經過魔法處理的注音國字
             btn.innerHTML = `${cat.icon} ${parseZhuyin(cat.name)}`;
             btn.onclick = () => { currentTabName = cat.name; renderTabs(); renderGrid(); };
             container.appendChild(btn);
         });
 
         const currentCat = config.categories.find(c => c.name === currentTabName);
-        document.getElementById('settingTabName').innerHTML = parseZhuyin(currentTabName);
-        
         const isNoLimit = (currentCat.deadline === '');
         document.getElementById('noLimitCheck').checked = isNoLimit;
         document.getElementById('deadlineInput').disabled = isNoLimit;
@@ -196,31 +213,36 @@
         const grid = document.getElementById('grid');
         grid.innerHTML = '';
         const count = parseInt(config.studentCount);
-        document.getElementById('statTotal').innerText = count;
+        const vacantList = getVacantList();
+        const activeTotal = count - vacantList.length;
+        document.getElementById('statTotal').innerText = activeTotal > 0 ? activeTotal : 0;
+        
         if (!data[currentTabName]) data[currentTabName] = [];
         let completed = 0;
         
         for (let i = 1; i <= count; i++) {
             const btn = document.createElement('button');
-            btn.className = `student-btn ${data[currentTabName].includes(i) ? 'completed' : ''}`;
-            btn.innerText = i;
-            if (data[currentTabName].includes(i)) completed++;
-            
-            btn.onclick = () => {
-                const index = data[currentTabName].indexOf(i);
-                let isChecking = false;
-                if (index === -1) { data[currentTabName].push(i); isChecking = true; } 
-                else { data[currentTabName].splice(index, 1); }
-                saveAll(); renderGrid();
+            if (vacantList.includes(i)) {
+                btn.className = 'student-btn vacant';
+                btn.innerText = i;
+            } else {
+                btn.className = `student-btn ${data[currentTabName].includes(i) ? 'completed' : ''}`;
+                btn.innerText = i;
+                if (data[currentTabName].includes(i)) completed++;
+                
+                btn.onclick = () => {
+                    const index = data[currentTabName].indexOf(i);
+                    let isChecking = false;
+                    if (index === -1) { data[currentTabName].push(i); isChecking = true; } 
+                    else { data[currentTabName].splice(index, 1); }
+                    saveAll(); renderGrid();
 
-                if (isChecking) {
-                    if (data[currentTabName].length === count) {
-                        showToast(classMsgs[Math.floor(Math.random() * classMsgs.length)], true);
-                    } else {
-                        showToast(individualMsgs[Math.floor(Math.random() * individualMsgs.length)]);
+                    if (isChecking) {
+                        if (data[currentTabName].length === activeTotal) showToast(classMsgs[Math.floor(Math.random() * classMsgs.length)], true);
+                        else showToast(individualMsgs[Math.floor(Math.random() * individualMsgs.length)]);
                     }
-                }
-            };
+                };
+            }
             grid.appendChild(btn);
         }
         document.getElementById('statCount').innerText = completed;
@@ -229,7 +251,10 @@
 
     function refreshUI() {
         const now = new Date();
+        const days = ['日', '一', '二', '三', '四', '五', '六'];
+        document.getElementById('currentDate').innerText = `${now.getMonth() + 1}月${now.getDate()}日 (${days[now.getDay()]})`;
         document.getElementById('currentTime').innerText = now.toTimeString().split(' ')[0];
+        
         const currentCat = config.categories.find(c => c.name === currentTabName);
         const grid = document.getElementById('grid');
         const label = document.getElementById('statusLabel');
@@ -275,7 +300,7 @@
 
     function deleteCurrentCategory() {
         if (config.categories.length <= 1) { alert("至少要保留一個任務喔！"); return; }
-        if (confirm(`確定要刪除「${currentTabName}」任務嗎？`)) {
+        if (confirm(`確定要刪除此任務嗎？`)) {
             config.categories = config.categories.filter(c => c.name !== currentTabName);
             delete data[currentTabName];
             currentTabName = config.categories[0].name;
@@ -289,9 +314,44 @@
         }
     }
 
+    function exportLog() {
+        let dateStr = new Date().toLocaleDateString('zh-TW');
+        let vacantList = getVacantList();
+        vacantList.sort((a,b) => a-b);
+        let vacantText = vacantList.length > 0 ? vacantList.join(', ') : '無';
+        
+        let text = `【每日任務大挑戰 - 班級紀錄】\n📅 日期：${dateStr}\n📢 今日公告：${config.announcement || '無'}\n🚫 請假/空號：${vacantText}\n\n`;
+        
+        let totalCount = parseInt(config.studentCount);
+
+        config.categories.forEach(cat => {
+            let cleanName = cat.name.replace(/[\(（].*?[\)）]/g, ''); 
+            let completed = data[cat.name] || [];
+            completed.sort((a,b) => a-b); 
+            
+            // 計算未完成的號碼
+            let incomplete = [];
+            for (let i = 1; i <= totalCount; i++) {
+                if (!completed.includes(i) && !vacantList.includes(i)) {
+                    incomplete.push(i);
+                }
+            }
+
+            text += `✅ 任務：${cat.icon} ${cleanName}\n`;
+            text += `   ⭕ 完成 (${completed.length}人)：${completed.length > 0 ? completed.join(', ') : '無'}\n`;
+            text += `   ❌ 未完成 (${incomplete.length}人)：${incomplete.length > 0 ? incomplete.join(', ') : '無'}\n\n`;
+        });
+
+        let blob = new Blob([text], {type: "text/plain;charset=utf-8"});
+        let link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `任務紀錄_${new Date().toISOString().split('T')[0]}.txt`;
+        link.click();
+    }
+
     function saveAll() {
-        localStorage.setItem('classConfig_v11', JSON.stringify(config));
-        localStorage.setItem('classData_v11', JSON.stringify(data));
+        localStorage.setItem('classConfig_v14', JSON.stringify(config));
+        localStorage.setItem('classData_v14', JSON.stringify(data));
     }
 
     init();

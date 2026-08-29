@@ -21,9 +21,42 @@
             margin-bottom: 15px; color: #2E7D32; text-align: center; letter-spacing: 15px; padding-left: 15px; font-weight: 900;
         }
 
-        /* 🔥 修正對齊問題：改用底線對齊，讓跳動永遠消失 🔥 */
-        .z-word { display: inline-flex; align-items: flex-end; margin: 0 4px; line-height: 1; }
-        .z-char { font-size: 1em; font-weight: 900; line-height: 1; }
+        /* 🔥 終極防護網格：把國字與注音鎖在絕對對齊的格子裡 🔥 */
+        .z-word { 
+            display: inline-flex; 
+            align-items: center; 
+            margin: 0 4px; 
+            vertical-align: middle;
+        }
+        .z-char { 
+            font-size: 1em; 
+            font-weight: 900; 
+            line-height: 1; 
+        }
+        .z-grid-box {
+            display: inline-grid;
+            grid-template-columns: auto auto; /* 左邊注音、右邊聲調 */
+            align-items: center;
+            margin-left: 2px;
+            font-size: 0.45em;
+            color: #555;
+            user-select: none;
+        }
+        .z-symbols-col {
+            grid-column: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.1;
+        }
+        .z-tone-col {
+            grid-column: 2;
+            font-weight: bold;
+            font-size: 1.2em;
+            margin-left: 2px;
+            align-self: center; /* 永遠完美垂直置中 */
+            line-height: 1;
+        }
 
         .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
         .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
@@ -115,6 +148,7 @@
 <div id="toast">這裡會顯示鼓勵！</div>
 
 <script>
+    // 🔥 絕不跑版的 CSS Grid 網格解析引擎 🔥
     function parseZhuyin(text) {
         const regex = /(.)[\(（](.*?)[\)）]/g;
         if (!regex.test(text)) return text;
@@ -124,20 +158,20 @@
             else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
             
             let symbols = base.split('');
-            let baseHtml = `<span class="z-bpmf-container" style="display:inline-block; vertical-align:baseline; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
+            let symbolsHtml = '';
             
-            if (lightTone) { baseHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`; }
-            
-            for(let i = 0; i < symbols.length; i++) {
-                let isLast = (i === symbols.length - 1);
-                baseHtml += `<span style="display:block; text-align:center; position:relative;">${symbols[i]}`;
-                if (isLast && tone) {
-                    baseHtml += `<span style="position:absolute; left:100%; top:0; font-weight:bold; font-size:1.2em; margin-left:1px;">${tone}</span>`;
-                }
-                baseHtml += `</span>`;
-            }
-            baseHtml += `</span>`;
-            return `<span class="z-word"><span class="z-char">${char}</span>${baseHtml}</span>`;
+            if (lightTone) { symbolsHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`; }
+            symbols.forEach(s => {
+                symbolsHtml += `<span style="display:block; text-align:center;">${s}</span>`;
+            });
+
+            return `<span class="z-word">
+                <span class="z-char">${char}</span>
+                <span class="z-grid-box">
+                    <span class="z-symbols-col">${symbolsHtml}</span>
+                    ${tone ? `<span class="z-tone-col">${tone}</span>` : ''}
+                </span>
+            </span>`;
         });
     }
 
@@ -153,7 +187,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v23')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v24')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -163,7 +197,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v23')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v24')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -397,8 +431,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v23', JSON.stringify(config));
-        localStorage.setItem('classData_v23', JSON.stringify(data));
+        localStorage.setItem('classConfig_v24', JSON.stringify(config));
+        localStorage.setItem('classData_v24', JSON.stringify(data));
     }
 
     init();

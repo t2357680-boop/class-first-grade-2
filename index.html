@@ -16,26 +16,20 @@
             overflow-x: hidden;
         }
         
-        /* 🔥 返璞歸真的綠色標題，保留寬字距 🔥 */
         h1 { 
             font-family: 'SetoFont', 'jf-openhuninn-1.1', 'cwTeXYen', 'Comic Sans MS', 'Chalkboard SE', '微軟正黑體', sans-serif;
-            margin-bottom: 15px; 
-            color: #2E7D32; /* 護眼有朝氣的森林綠 */
-            text-align: center; 
-            letter-spacing: 15px; /* 把字距拉開 */
-            padding-left: 15px; /* 補齊字距造成的偏移 */
-            font-weight: 900;
+            margin-bottom: 15px; color: #2E7D32; text-align: center; letter-spacing: 15px; padding-left: 15px; font-weight: 900;
         }
 
-        .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; vertical-align: bottom; }
-        .z-char { font-size: 1em; font-weight: 900; }
+        /* 🔥 修正對齊問題：改用底線對齊，讓跳動永遠消失 🔥 */
+        .z-word { display: inline-flex; align-items: flex-end; margin: 0 4px; line-height: 1; }
+        .z-char { font-size: 1em; font-weight: 900; line-height: 1; }
 
         .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
         .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
         
         .timer-zone { background: #FFF3E0; border: 3px solid var(--primary); padding: 10px 25px; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: bold; font-size: 20px; }
         
-        /* 公告板共用樣式 */
         .announce-board { width: 100%; max-width: 800px; text-align: center; font-size: 24px; font-weight: bold; background: #FFF9C4; padding: 12px; border-radius: 12px; margin-bottom: 25px; box-sizing: border-box; }
         #announceDisplay { border: 3px solid #FFB300; min-height: 58px; display: flex; align-items: center; justify-content: center; }
         #announceInput { border: 3px dashed #FFCA28; color: #E65100; outline: none; }
@@ -130,7 +124,7 @@
             else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
             
             let symbols = base.split('');
-            let baseHtml = `<span class="z-bpmf-container" style="display:inline-block; vertical-align:middle; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
+            let baseHtml = `<span class="z-bpmf-container" style="display:inline-block; vertical-align:baseline; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
             
             if (lightTone) { baseHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`; }
             
@@ -159,7 +153,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v22')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v23')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -169,7 +163,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v22')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v23')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -403,8 +397,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v22', JSON.stringify(config));
-        localStorage.setItem('classData_v22', JSON.stringify(data));
+        localStorage.setItem('classConfig_v23', JSON.stringify(config));
+        localStorage.setItem('classData_v23', JSON.stringify(data));
     }
 
     init();

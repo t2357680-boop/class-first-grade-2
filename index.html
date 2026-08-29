@@ -16,23 +16,15 @@
             overflow-x: hidden;
         }
         
-        /* 🔥 超可愛貼紙風標題 (含注音防護) 🔥 */
+        /* 🔥 返璞歸真的綠色標題，保留寬字距 🔥 */
         h1 { 
             font-family: 'SetoFont', 'jf-openhuninn-1.1', 'cwTeXYen', 'Comic Sans MS', 'Chalkboard SE', '微軟正黑體', sans-serif;
             margin-bottom: 15px; 
-            color: #FF5722; 
+            color: #2E7D32; /* 護眼有朝氣的森林綠 */
             text-align: center; 
+            letter-spacing: 15px; /* 把字距拉開 */
+            padding-left: 15px; /* 補齊字距造成的偏移 */
             font-weight: 900;
-        }
-        h1 .z-word {
-            margin: 0 12px; /* 用這個拉開字距，才不會破壞注音的位置 */
-        }
-        h1 .z-char {
-            /* 立體貼紙陰影只加在國字上，注音保持乾淨 */
-            text-shadow: 4px 4px 0px #FFECB3, -2px -2px 0px #FFF, 0px 5px 15px rgba(0,0,0,0.1); 
-        }
-        h1 .z-bpmf-container {
-            color: #D84315 !important; /* 讓標題注音變深橘色，更清楚 */
         }
 
         .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; vertical-align: bottom; }
@@ -78,7 +70,7 @@
 <body>
 
 <div class="header">
-    <h1 style="font-size: 56px;" id="mainTitle"></h1>
+    <h1 style="font-size: 56px;">每日任務大挑戰</h1>
 </div>
 
 <div class="setup-panel">
@@ -109,7 +101,6 @@
             <span id="deadlineText" style="font-size: 16px; color: var(--danger);"></span>
         </div>
         
-        <!-- 🔥 變形金剛公告板 🔥 -->
         <div id="announceDisplay" class="announce-board" style="cursor: pointer;" onclick="editAnnounce()"></div>
         <input type="text" id="announceInput" class="announce-board" style="display: none;" onblur="saveAnnounce()" onkeypress="handleAnnounceEnter(event)">
         
@@ -155,9 +146,6 @@
             return `<span class="z-word"><span class="z-char">${char}</span>${baseHtml}</span>`;
         });
     }
-    
-    // 綁定大標題注音
-    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠˇ)戰(ㄓㄢˋ)');
 
     const individualMsgs = [
         parseZhuyin("你(ㄋㄧˇ)很(ㄏㄣˇ)努(ㄋㄨˇ)力(ㄌㄧˋ)喔(ㄛ)！"), 
@@ -171,7 +159,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v21')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v22')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -181,7 +169,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v21')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v22')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -415,8 +403,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v21', JSON.stringify(config));
-        localStorage.setItem('classData_v21', JSON.stringify(data));
+        localStorage.setItem('classConfig_v22', JSON.stringify(config));
+        localStorage.setItem('classData_v22', JSON.stringify(data));
     }
 
     init();

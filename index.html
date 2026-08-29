@@ -16,16 +16,39 @@
             overflow-x: hidden;
         }
         
-        h1 { margin-bottom: 5px; color: #E65100; text-align: center; }
-        .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; }
+        /* 🔥 超可愛貼紙風標題 (含注音防護) 🔥 */
+        h1 { 
+            font-family: 'SetoFont', 'jf-openhuninn-1.1', 'cwTeXYen', 'Comic Sans MS', 'Chalkboard SE', '微軟正黑體', sans-serif;
+            margin-bottom: 15px; 
+            color: #FF5722; 
+            text-align: center; 
+            font-weight: 900;
+        }
+        h1 .z-word {
+            margin: 0 12px; /* 用這個拉開字距，才不會破壞注音的位置 */
+        }
+        h1 .z-char {
+            /* 立體貼紙陰影只加在國字上，注音保持乾淨 */
+            text-shadow: 4px 4px 0px #FFECB3, -2px -2px 0px #FFF, 0px 5px 15px rgba(0,0,0,0.1); 
+        }
+        h1 .z-bpmf-container {
+            color: #D84315 !important; /* 讓標題注音變深橘色，更清楚 */
+        }
+
+        .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; vertical-align: bottom; }
         .z-char { font-size: 1em; font-weight: 900; }
 
         .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
         .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
         
-        .timer-zone { background: #FFF3E0; border: 3px solid var(--primary); padding: 10px 25px; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 10px; font-weight: bold; font-size: 20px; }
-        .announce-board { width: 100%; max-width: 800px; text-align: center; font-size: 24px; font-weight: bold; color: #E65100; border: 3px dashed #FFCA28; background: #FFF9C4; padding: 12px; border-radius: 12px; margin-bottom: 25px; box-sizing: border-box; }
+        .timer-zone { background: #FFF3E0; border: 3px solid var(--primary); padding: 10px 25px; border-radius: 50px; display: inline-flex; align-items: center; gap: 10px; margin-bottom: 15px; font-weight: bold; font-size: 20px; }
         
+        /* 公告板共用樣式 */
+        .announce-board { width: 100%; max-width: 800px; text-align: center; font-size: 24px; font-weight: bold; background: #FFF9C4; padding: 12px; border-radius: 12px; margin-bottom: 25px; box-sizing: border-box; }
+        #announceDisplay { border: 3px solid #FFB300; min-height: 58px; display: flex; align-items: center; justify-content: center; }
+        #announceInput { border: 3px dashed #FFCA28; color: #E65100; outline: none; }
+        #announceInput:focus { border-color: #FF9800; background: #FFF; }
+
         .is-locked { opacity: 0.4; pointer-events: none; filter: grayscale(1); } 
         .tabs { display: flex; gap: 15px; margin-bottom: 25px; overflow-x: auto; padding-bottom: 10px; align-items: center; justify-content: center; }
         .tab-btn { padding: 12px 25px; border: 3px solid var(--border); border-radius: 50px; background: white; cursor: pointer; color: var(--primary); font-size: 26px; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 8px; }
@@ -55,7 +78,7 @@
 <body>
 
 <div class="header">
-    <h1 style="font-size: 52px;" id="mainTitle">每日任務大挑戰</h1>
+    <h1 style="font-size: 56px;" id="mainTitle"></h1>
 </div>
 
 <div class="setup-panel">
@@ -85,7 +108,11 @@
             <span id="statusLabel" style="margin-left: 10px; padding: 4px 12px; border-radius: 12px; font-size: 16px;"></span>
             <span id="deadlineText" style="font-size: 16px; color: var(--danger);"></span>
         </div>
-        <input type="text" id="announceInput" class="announce-board" placeholder="📢 點這裡打字公告（例：值日生：3, 4 / 抬餐桶：第三組）" onchange="saveAnnounce()">
+        
+        <!-- 🔥 變形金剛公告板 🔥 -->
+        <div id="announceDisplay" class="announce-board" style="cursor: pointer;" onclick="editAnnounce()"></div>
+        <input type="text" id="announceInput" class="announce-board" style="display: none;" onblur="saveAnnounce()" onkeypress="handleAnnounceEnter(event)">
+        
     </div>
 
     <div class="tabs" id="tabs"></div>
@@ -103,7 +130,6 @@
 <div id="toast">這裡會顯示鼓勵！</div>
 
 <script>
-    // 🔥 全新「跟屁蟲」注音解析引擎 🔥
     function parseZhuyin(text) {
         const regex = /(.)[\(（](.*?)[\)）]/g;
         if (!regex.test(text)) return text;
@@ -113,30 +139,26 @@
             else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
             
             let symbols = base.split('');
-            let baseHtml = `<span style="display:inline-block; vertical-align:middle; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
+            let baseHtml = `<span class="z-bpmf-container" style="display:inline-block; vertical-align:middle; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
             
-            if (lightTone) {
-                baseHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`;
-            }
+            if (lightTone) { baseHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`; }
             
             for(let i = 0; i < symbols.length; i++) {
                 let isLast = (i === symbols.length - 1);
-                baseHtml += `<span style="display:block; text-align:center; position:relative;">`;
-                baseHtml += symbols[i];
-                
-                // 只有遇到最後一個注音符號，且有聲調時，才把聲調黏在它的右上角
+                baseHtml += `<span style="display:block; text-align:center; position:relative;">${symbols[i]}`;
                 if (isLast && tone) {
                     baseHtml += `<span style="position:absolute; left:100%; top:0; font-weight:bold; font-size:1.2em; margin-left:1px;">${tone}</span>`;
                 }
                 baseHtml += `</span>`;
             }
             baseHtml += `</span>`;
-
             return `<span class="z-word"><span class="z-char">${char}</span>${baseHtml}</span>`;
         });
     }
     
-    // 正向溫和鼓勵語
+    // 綁定大標題注音
+    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠˇ)戰(ㄓㄢˋ)');
+
     const individualMsgs = [
         parseZhuyin("你(ㄋㄧˇ)很(ㄏㄣˇ)努(ㄋㄨˇ)力(ㄌㄧˋ)喔(ㄛ)！"), 
         parseZhuyin("越(ㄩㄝˋ)來(ㄌㄞˊ)越(ㄩㄝˋ)進(ㄐㄧㄣˋ)步(ㄅㄨˋ)了(˙ㄌㄜ)！"), 
@@ -149,7 +171,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v19')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v21')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -159,7 +181,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v19')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v21')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -187,14 +209,45 @@
     function init() {
         document.getElementById('numInput').value = config.studentCount;
         document.getElementById('vacantInput').value = config.vacant;
-        document.getElementById('announceInput').value = config.announcement;
         
         document.getElementById('numInput').onchange = (e) => { config.studentCount = e.target.value; saveAll(); renderGrid(); };
-        renderTabs(); renderGrid(); setInterval(refreshUI, 1000);
+        renderTabs(); renderGrid(); updateAnnounceDisplay(); setInterval(refreshUI, 1000);
+    }
+
+    function editAnnounce() {
+        document.getElementById('announceDisplay').style.display = 'none';
+        let input = document.getElementById('announceInput');
+        input.style.display = 'block';
+        input.value = config.announcement;
+        input.focus();
+    }
+
+    function saveAnnounce() {
+        config.announcement = document.getElementById('announceInput').value.trim();
+        document.getElementById('announceInput').style.display = 'none';
+        document.getElementById('announceDisplay').style.display = 'flex';
+        updateAnnounceDisplay();
+        saveAll();
+    }
+
+    function handleAnnounceEnter(e) {
+        if(e.key === 'Enter') { saveAnnounce(); }
+    }
+
+    function updateAnnounceDisplay() {
+        let display = document.getElementById('announceDisplay');
+        if(!config.announcement) {
+            display.innerHTML = "📢 點擊這裡打字公告（支援注音，例：值(ㄓˊ)日(ㄖˋ)生(ㄕㄥ)）";
+            display.style.color = '#B0BEC5';
+            display.style.borderStyle = 'dashed';
+        } else {
+            display.innerHTML = '📢 ' + parseZhuyin(config.announcement);
+            display.style.color = '#E65100';
+            display.style.borderStyle = 'solid';
+        }
     }
 
     function updateVacant() { config.vacant = document.getElementById('vacantInput').value; saveAll(); renderGrid(); }
-    function saveAnnounce() { config.announcement = document.getElementById('announceInput').value; saveAll(); }
     function getVacantList() { return config.vacant.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n)); }
 
     function renderTabs() {
@@ -362,8 +415,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v19', JSON.stringify(config));
-        localStorage.setItem('classData_v19', JSON.stringify(data));
+        localStorage.setItem('classConfig_v21', JSON.stringify(config));
+        localStorage.setItem('classData_v21', JSON.stringify(data));
     }
 
     init();

@@ -21,7 +21,7 @@
             margin-bottom: 15px; color: #2E7D32; text-align: center; letter-spacing: 15px; padding-left: 15px; font-weight: 900;
         }
 
-        /* 🔥 終極防護網格：把國字與注音鎖在絕對對齊的格子裡 🔥 */
+        /* 🔥 聲調絕對跟屁蟲鎖定 🔥 */
         .z-word { 
             display: inline-flex; 
             align-items: center; 
@@ -34,27 +34,28 @@
             line-height: 1; 
         }
         .z-grid-box {
-            display: inline-grid;
-            grid-template-columns: auto auto; /* 左邊注音、右邊聲調 */
+            display: inline-flex;
+            flex-direction: column;
             align-items: center;
             margin-left: 2px;
             font-size: 0.45em;
             color: #555;
             user-select: none;
-        }
-        .z-symbols-col {
-            grid-column: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
             line-height: 1.1;
+            position: relative; /* 作為聲調定位的基地 */
         }
-        .z-tone-col {
-            grid-column: 2;
+        .z-symbol-item {
+            display: block;
+            text-align: center;
+        }
+        .z-tone-absolute {
+            position: absolute;
+            left: 100%;
+            top: 50%;
+            transform: translateY(-50%); /* 完美垂直置中貼在右側 */
             font-weight: bold;
-            font-size: 1.2em;
+            font-size: 1.3em;
             margin-left: 2px;
-            align-self: center; /* 永遠完美垂直置中 */
             line-height: 1;
         }
 
@@ -148,7 +149,7 @@
 <div id="toast">這裡會顯示鼓勵！</div>
 
 <script>
-    // 🔥 絕不跑版的 CSS Grid 網格解析引擎 🔥
+    // 🔥 聲調絕對釘選解析引擎 🔥
     function parseZhuyin(text) {
         const regex = /(.)[\(（](.*?)[\)）]/g;
         if (!regex.test(text)) return text;
@@ -160,17 +161,22 @@
             let symbols = base.split('');
             let symbolsHtml = '';
             
-            if (lightTone) { symbolsHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`; }
-            symbols.forEach(s => {
-                symbolsHtml += `<span style="display:block; text-align:center;">${s}</span>`;
+            if (lightTone) { 
+                symbolsHtml += `<span class="z-symbol-item" style="font-weight:bold;">˙</span>`; 
+            }
+            symbols.forEach((s, idx) => {
+                let isLast = (idx === symbols.length - 1);
+                // 把聲調絕對定位在最後一個注音符號旁邊
+                if (isLast && tone) {
+                    symbolsHtml += `<span class="z-symbol-item" style="position:relative;">${s}<span class="z-tone-absolute">${tone}</span></span>`;
+                } else {
+                    symbolsHtml += `<span class="z-symbol-item">${s}</span>`;
+                }
             });
 
             return `<span class="z-word">
                 <span class="z-char">${char}</span>
-                <span class="z-grid-box">
-                    <span class="z-symbols-col">${symbolsHtml}</span>
-                    ${tone ? `<span class="z-tone-col">${tone}</span>` : ''}
-                </span>
+                <span class="z-grid-box">${symbolsHtml}</span>
             </span>`;
         });
     }
@@ -187,7 +193,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v24')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v25')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -197,7 +203,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v24')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v25')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -431,8 +437,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v24', JSON.stringify(config));
-        localStorage.setItem('classData_v24', JSON.stringify(data));
+        localStorage.setItem('classConfig_v25', JSON.stringify(config));
+        localStorage.setItem('classData_v25', JSON.stringify(data));
     }
 
     init();

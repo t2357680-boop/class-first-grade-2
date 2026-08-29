@@ -16,38 +16,9 @@
             overflow-x: hidden;
         }
         
-        /* 🔥 絕對網格 (CSS Grid) 注音排版系統 🔥 */
         h1 { margin-bottom: 5px; color: #E65100; text-align: center; }
         .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; }
         .z-char { font-size: 1em; font-weight: 900; }
-        
-        /* 隱形的 Excel 網格 */
-        .z-grid { 
-            display: inline-grid; 
-            grid-template-columns: auto auto; /* 左邊注音、右邊聲調 */
-            justify-items: center; 
-            font-size: 0.45em; 
-            color: #555; 
-            margin-left: 3px; 
-            user-select: none;
-        }
-        .z-sym { 
-            grid-column: 1; /* 鎖死在第一行 */
-            line-height: 1.1; 
-        }
-        .z-light { 
-            grid-column: 1; 
-            font-weight: bold; 
-            line-height: 1.1; 
-        }
-        .z-tone-grid { 
-            grid-column: 2; /* 鎖死在第二行 */
-            align-self: center; /* 永遠垂直置中對齊左邊 */
-            font-weight: bold; 
-            font-size: 1.35em; 
-            margin-left: 3px; 
-            line-height: 1;
-        }
 
         .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
         .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
@@ -84,7 +55,7 @@
 <body>
 
 <div class="header">
-    <h1 style="font-size: 52px;" id="mainTitle"></h1>
+    <h1 style="font-size: 52px;" id="mainTitle">每日任務大挑戰</h1>
 </div>
 
 <div class="setup-panel">
@@ -132,7 +103,7 @@
 <div id="toast">這裡會顯示鼓勵！</div>
 
 <script>
-    // 🔥 全新 CSS Grid 網格解析引擎 🔥
+    // 🔥 全新「跟屁蟲」注音解析引擎 🔥
     function parseZhuyin(text) {
         const regex = /(.)[\(（](.*?)[\)）]/g;
         if (!regex.test(text)) return text;
@@ -142,28 +113,30 @@
             else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
             
             let symbols = base.split('');
-            let gridHtml = '';
-            let row = 1;
+            let baseHtml = `<span style="display:inline-block; vertical-align:middle; line-height:1.1; font-size:0.45em; color:#555; margin-left:2px; user-select:none;">`;
             
-            // 把注音符號放入第一行
-            if (lightTone) { gridHtml += `<span class="z-light" style="grid-row: ${row++};">˙</span>`; }
-            symbols.forEach(s => { gridHtml += `<span class="z-sym" style="grid-row: ${row++};">${s}</span>`; });
-            
-            // 把聲調放入第二行，並讓它從第一列跨越到最後一列，達成絕對置中
-            if (tone) {
-                let totalRows = row - 1;
-                gridHtml += `<span class="z-tone-grid" style="grid-row: 1 / span ${totalRows};">${tone}</span>`;
+            if (lightTone) {
+                baseHtml += `<span style="display:block; text-align:center; font-weight:bold;">˙</span>`;
             }
             
-            return `<span class="z-word">
-                <span class="z-char">${char}</span>
-                <span class="z-grid">${gridHtml}</span>
-            </span>`;
+            for(let i = 0; i < symbols.length; i++) {
+                let isLast = (i === symbols.length - 1);
+                baseHtml += `<span style="display:block; text-align:center; position:relative;">`;
+                baseHtml += symbols[i];
+                
+                // 只有遇到最後一個注音符號，且有聲調時，才把聲調黏在它的右上角
+                if (isLast && tone) {
+                    baseHtml += `<span style="position:absolute; left:100%; top:0; font-weight:bold; font-size:1.2em; margin-left:1px;">${tone}</span>`;
+                }
+                baseHtml += `</span>`;
+            }
+            baseHtml += `</span>`;
+
+            return `<span class="z-word"><span class="z-char">${char}</span>${baseHtml}</span>`;
         });
     }
-
-    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠˇ)戰(ㄓㄢˋ)');
     
+    // 正向溫和鼓勵語
     const individualMsgs = [
         parseZhuyin("你(ㄋㄧˇ)很(ㄏㄣˇ)努(ㄋㄨˇ)力(ㄌㄧˋ)喔(ㄛ)！"), 
         parseZhuyin("越(ㄩㄝˋ)來(ㄌㄞˊ)越(ㄩㄝˋ)進(ㄐㄧㄣˋ)步(ㄅㄨˋ)了(˙ㄌㄜ)！"), 
@@ -176,7 +149,7 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v18')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v19')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
@@ -186,7 +159,7 @@
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v18')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v19')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -389,8 +362,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v18', JSON.stringify(config));
-        localStorage.setItem('classData_v18', JSON.stringify(data));
+        localStorage.setItem('classConfig_v19', JSON.stringify(config));
+        localStorage.setItem('classData_v19', JSON.stringify(data));
     }
 
     init();

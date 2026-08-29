@@ -16,16 +16,49 @@
             overflow-x: hidden;
         }
         
+        /* 🔥 跨平台防跑版注音排版系統 🔥 */
         h1 { margin-bottom: 5px; color: #E65100; text-align: center; }
         .z-word { display: inline-flex; align-items: center; margin: 0 4px; line-height: 1; }
         .z-char { font-size: 1em; font-weight: 900; }
-        .z-bpmf-box {
-            position: relative; display: inline-flex; flex-direction: column; justify-content: center;
-            margin-left: 3px; margin-right: 0.6em; font-size: 0.45em; color: #555; font-weight: normal; line-height: 1.1;
+        
+        /* 建立一個水平的防護盒，避免 Mac 瀏覽器迷失方向 */
+        .z-bpmf-wrapper {
+            position: relative; 
+            display: inline-block; 
+            vertical-align: middle;
+            margin-left: 2px; 
+            margin-right: 0.5em; /* 預留給聲調的寬度 */
         }
-        .z-bpmf-symbols { writing-mode: vertical-rl; text-orientation: upright; letter-spacing: -1px; }
-        .z-tone { position: absolute; right: -0.9em; font-size: 1em; font-weight: bold; }
-        .z-tone-light { position: absolute; top: -1em; left: 50%; transform: translateX(-50%); font-size: 1em; font-weight: bold; }
+        .z-bpmf-symbols { 
+            display: inline-block; 
+            writing-mode: vertical-rl; 
+            text-orientation: upright; 
+            letter-spacing: -1px; 
+            font-size: 0.45em; 
+            color: #555; 
+            font-weight: normal; 
+            line-height: 1; 
+        }
+        .z-tone { 
+            position: absolute; 
+            left: 100%; /* 永遠緊貼在防護盒的右側 */
+            margin-left: 2px; 
+            font-size: 0.45em; 
+            font-weight: bold; 
+            color: #555;
+            line-height: 1;
+        }
+        .z-tone-light { 
+            position: absolute; 
+            bottom: 100%; /* 永遠緊貼在防護盒的正上方 */
+            left: 50%; 
+            transform: translateX(-50%); 
+            font-size: 0.45em; 
+            font-weight: bold; 
+            color: #555;
+            margin-bottom: 2px;
+            line-height: 1;
+        }
 
         .setup-panel { background: #FFECB3; padding: 15px; border-radius: 12px; margin-bottom: 20px; display: flex; gap: 10px; align-items: center; border: 2px dashed var(--primary); width: 100%; max-width: 1000px; font-size: 16px; justify-content: center; flex-wrap: wrap; }
         .main-card { background: var(--card); padding: 30px; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.1); width: 100%; max-width: 1000px; box-sizing: border-box; }
@@ -92,7 +125,6 @@
             <span id="statusLabel" style="margin-left: 10px; padding: 4px 12px; border-radius: 12px; font-size: 16px;"></span>
             <span id="deadlineText" style="font-size: 16px; color: var(--danger);"></span>
         </div>
-        <!-- 發光公告板 -->
         <input type="text" id="announceInput" class="announce-board" placeholder="📢 點這裡打字公告（例：值日生：3, 4 / 抬餐桶：第三組）" onchange="saveAnnounce()">
     </div>
 
@@ -118,12 +150,28 @@
             let tone = ''; let lightTone = ''; let base = bpmf.trim();
             if (base.includes('˙')) { lightTone = '˙'; base = base.replace('˙', ''); } 
             else if (/[ˊˇˋ]/.test(base)) { tone = base.match(/[ˊˇˋ]/)[0]; base = base.replace(/[ˊˇˋ]/, ''); }
-            let tonePos = base.length === 3 ? 'top: 65%;' : 'top: 50%;';
-            return `<span class="z-word"><span class="z-char">${char}</span><span class="z-bpmf-box">${lightTone ? `<span class="z-tone-light">˙</span>` : ''}<span class="z-bpmf-symbols">${base}</span>${tone ? `<span class="z-tone" style="${tonePos} transform: translateY(-50%);">${tone}</span>` : ''}</span></span>`;
+            
+            // 數學精準對齊邏輯
+            let tonePos = '';
+            if (base.length === 1) {
+                tonePos = 'top: 0; transform: translateY(10%);'; // 1個注音：對齊右上角
+            } else {
+                tonePos = 'top: 50%; transform: translateY(-50%);'; // 2或3個注音：精準對齊正中間
+            }
+
+            return `<span class="z-word">
+                <span class="z-char">${char}</span>
+                <span class="z-bpmf-wrapper">
+                    ${lightTone ? `<span class="z-tone-light">˙</span>` : ''}
+                    <span class="z-bpmf-symbols">${base}</span>
+                    ${tone ? `<span class="z-tone" style="${tonePos}">${tone}</span>` : ''}
+                </span>
+            </span>`;
         });
     }
 
-    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠ)戰(ㄓㄢˋ)');
+    // 幫你把挑戰的挑補上了三聲 ㄊㄧㄠˇ
+    document.getElementById('mainTitle').innerHTML = parseZhuyin('每(ㄇㄟˇ)日(ㄖˋ)任(ㄖㄣˋ)務(ㄨˋ)大(ㄉㄚˋ)挑(ㄊㄧㄠˇ)戰(ㄓㄢˋ)');
     
     const individualMsgs = [
         parseZhuyin("你(ㄋㄧˇ)很(ㄏㄣˇ)努(ㄋㄨˇ)力(ㄌㄧˋ)喔(ㄛ)！"), 
@@ -137,16 +185,17 @@
         parseZhuyin("大(ㄉㄚˋ)家(ㄐㄧㄚ)一(ㄧˋ)起(ㄑㄧˇ)過(ㄍㄨㄛˋ)關(ㄍㄨㄢ)了(˙ㄌㄜ)！")
     ];
 
-    let config = JSON.parse(localStorage.getItem('classConfig_v14')) || {
+    let config = JSON.parse(localStorage.getItem('classConfig_v15')) || {
         studentCount: 32,
         vacant: "14,15,16,17,18,19,20",
         announcement: "",
         categories: [
+            { name: '早(ㄗㄠˇ)安(ㄢ)打(ㄉㄚˇ)卡(ㄎㄚˇ)', icon: '🎒', deadline: '08:00' },
             { name: '潔(ㄐㄧㄝˊ)牙(ㄧㄚˊ)', icon: '🦷', deadline: '12:35' },
             { name: '收(ㄕㄡ)桌(ㄓㄨㄛ)子(˙ㄗ)', icon: '✨', deadline: '12:40' }
         ]
     };
-    let data = JSON.parse(localStorage.getItem('classData_v14')) || {};
+    let data = JSON.parse(localStorage.getItem('classData_v15')) || {};
     let currentTabName = config.categories[0].name;
 
     function showToast(msg, isCelebrate = false) {
@@ -329,7 +378,6 @@
             let completed = data[cat.name] || [];
             completed.sort((a,b) => a-b); 
             
-            // 計算未完成的號碼
             let incomplete = [];
             for (let i = 1; i <= totalCount; i++) {
                 if (!completed.includes(i) && !vacantList.includes(i)) {
@@ -350,8 +398,8 @@
     }
 
     function saveAll() {
-        localStorage.setItem('classConfig_v14', JSON.stringify(config));
-        localStorage.setItem('classData_v14', JSON.stringify(data));
+        localStorage.setItem('classConfig_v15', JSON.stringify(config));
+        localStorage.setItem('classData_v15', JSON.stringify(data));
     }
 
     init();
